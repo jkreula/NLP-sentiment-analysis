@@ -12,6 +12,7 @@ import urllib
 import numpy as np
 import pandas as pd
 import pyprind # For progress bar
+from time import time # For timing
 
 def fetch_data(data_save_path: str, data_url: str, verbose: bool = True) -> None:
     '''
@@ -30,6 +31,8 @@ def fetch_data(data_save_path: str, data_url: str, verbose: bool = True) -> None
     -------
     None
     '''
+    time_start = time()
+    
     # Create folder if needed
     if not os.path.isdir(data_save_path):
         os.makedirs(data_save_path)
@@ -46,10 +49,10 @@ def fetch_data(data_save_path: str, data_url: str, verbose: bool = True) -> None
     with tarfile.open(file_path, 'r:gz') as tar:
         try:
             tar.extractall(path=data_save_path)
-            if verbose: print("Data fetch successful.")
+            if verbose: print(f"Data fetch successful. It took {time()-time_start:.2f}s.")
         except:
             print("Error in extracting data.")
-            
+    
 
 def save_data_as_csv(data_path: str, save_filename: str, verbose: bool = True) -> None:
     '''
@@ -100,9 +103,10 @@ def save_data_as_csv(data_path: str, save_filename: str, verbose: bool = True) -
         print("Saving data to csv...")
     try:
         df.to_csv(os.path.join(DATA_PATH,save_filename),index=False,encoding="utf-8")
-        print("Data saved to csv.")
     except:
         print("Error in saving data.")
+    else:
+        print("Data saved to csv.")
 
 if __name__ == "__main__":
     
