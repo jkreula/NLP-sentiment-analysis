@@ -71,10 +71,49 @@ def get_stemmed_tokens(text: str) -> List[str]:
     stemmer = PorterStemmer()
     return [stemmer.stem(word) for word in text.split() if word not in stop_words]
 
+
+def clean_and_tokenise(text: str) -> List[str]:
+    '''
+    Clean text and tokenise using clean_text() and get_tokens() functions.
+
+    Parameters
+    ----------
+    text : str
+        Text to be cleaned and tokenised.
+
+    Returns
+    -------
+    List[str]
+        List of cleaned tokens.
+
+    '''
+    
+    return get_tokens(clean_text(text))
+
+def clean_and_tokenise_with_stemming(text: str) -> List[str]:
+    '''
+    Clean text and tokenise with stemming using clean_text() and 
+    get_stemmed_tokens() functions.
+
+    Parameters
+    ----------
+    text : str
+        Text to be cleaned and tokenised.
+
+    Returns
+    -------
+    List[str]
+        List of cleaned tokens.
+
+    '''
+    
+    return get_stemmed_tokens(clean_text(text))
+
 if __name__ == "__main__":
     
     test = "</a>This :) is :( a test :-)!"
     test_ = clean_text(test)
+    test__ = clean_and_tokenise(test)
     
     # Current working directory
     CWD = os.getcwd()
@@ -86,3 +125,5 @@ if __name__ == "__main__":
     data_filename="imdb_data.csv"
     df = pd.read_csv(os.path.join(DATA_PATH,data_filename))
     df['Review_text'] = df['Review_text'].apply(clean_text)
+    
+    
