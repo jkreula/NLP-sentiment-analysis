@@ -95,8 +95,8 @@ if __name__ == "__main__":
     
     online_learning = True
     
-    # Current working directory
-    CWD = os.getcwd()
+    # Current directory
+    CWD = os.path.dirname(__file__)
     
     # Path to data
     data_folder = "Data"
@@ -186,5 +186,9 @@ if __name__ == "__main__":
         clf = sgd_clf.partial_fit(X_test,y_test)
         stop_words = stopwords.words('english')
         
-        pickle.dump(clf,open(os.path.join(pkl_folder,"online_classifier.pkl"),"wb"),protocol=4)
-        pickle.dump(stop_words,open(os.path.join(pkl_folder,"stopwords.pkl"),"wb"),protocol=4)
+        pickle.dump(clf,
+                    open(os.path.join(pkl_folder,"online_classifier.pkl"),"wb"),
+                    protocol=5)
+        pickle.dump(stop_words,
+                    open(os.path.join(pkl_folder,"stopwords.pkl"),"wb"),
+                    protocol=5)
