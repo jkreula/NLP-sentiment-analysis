@@ -53,6 +53,14 @@ def fetch_data(data_save_path: str, data_url: str, verbose: bool = True) -> None
         except:
             print("Error in extracting data.")
     
+def find_num_files(data_path: str) -> int:
+    num_files = 0
+    for split in ('test','train'):
+        for label in ('pos','neg'):
+            filepath = os.path.join(data_path,split,label)
+            num_files += len(os.listdir(filepath))
+    return num_files
+    
 
 def save_data_as_csv(data_path: str, save_filename: str, verbose: bool = True) -> None:
     '''
@@ -75,7 +83,8 @@ def save_data_as_csv(data_path: str, save_filename: str, verbose: bool = True) -
     None
     '''
     # Initialise progress bar
-    progress_bar = pyprind.ProgBar(int(5e4))
+    num_files = find_num_files(data_files)
+    progress_bar = pyprind.ProgBar(num_files)
     # Dictionary to map labels
     label_dict = {'pos': 1, 'neg': 0}
     # Initialise DataFrame
