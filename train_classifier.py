@@ -18,8 +18,9 @@ from sklearn.feature_extraction.text import TfidfVectorizer, HashingVectorizer
 from sklearn.pipeline import Pipeline
 from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.model_selection import train_test_split, GridSearchCV
-
 from sklearn.metrics import roc_auc_score
+
+import pickle
 
 def stream_files(filepath: str) -> Generator:
     '''
@@ -176,3 +177,14 @@ if __name__ == "__main__":
         X_test, y_test = get_minibatch(stream, batch_size = 5000)
         X_test = hvec.transform(X_test)
         print(f"Accuracy {sgd_clf.score(X_test,y_test):.3f}")
+        
+        pkl_folder = os.path.join(CWD,"pickled_objects")
+
+        if not os.path.isdir(pkl_folder):
+            os.makedirs(pkl_folder)
+        
+        clf = sgd_clf.partial_fit(X_test,y_test)
+        stop_words = stopwords.words('english')
+        
+        pickle.dump(clf,open(os.path.join(pkl_folder,"online_classifier.pkl"),"wb"),protocol=4)
+        pickle.dump(stop_words,open(os.path.join(pkl_folder,"stopwords.pkl"),"wb"),protocol=4)
