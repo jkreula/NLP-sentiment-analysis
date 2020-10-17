@@ -14,8 +14,8 @@ from nltk.corpus import stopwords
 
 def clean_text(text: str) -> str:
     '''
-    Clean HTML markup, find emoticons, remove non-words and put text to lowercase. 
-    Found emoticons are concatenated at the end of the cleaned text.
+    Clean HTML markup, find smileys, remove non-words and put text to lowercase. 
+    Found smileys are concatenated at the end of the cleaned text.
 
     Parameters
     ----------
@@ -29,8 +29,8 @@ def clean_text(text: str) -> str:
 
     '''
     text = re.sub('<[^>]*>','',text)
-    emoticons = re.findall(r'(?::|;|=)(?:-)?(?:\)|\(|D|P)',text)
-    text = re.sub(r'[\W]+',' ',text.lower()) + ' '.join(emoticons).replace('-','')
+    smileys = re.findall(r'(?::|;|=)(?:-)?(?:\)|\(|D|P)',text)
+    text = re.sub(r'[\W]+',' ',text.lower()) + ' '.join(smileys).replace('-','')
     return text.strip()
 
 def get_tokens(text: str) -> List[str]:
@@ -111,9 +111,11 @@ def clean_and_tokenise_with_stemming(text: str) -> List[str]:
 
 if __name__ == "__main__":
     
-    test = "</a>This :) is :( a test :-)!"
+    test = ":-( </a> A :) test :( review ! :-(!"
     test_ = clean_text(test)
+    print(test_)
     test__ = clean_and_tokenise(test)
+    print(test__)
     
     # Current working directory
     CWD = os.getcwd()
