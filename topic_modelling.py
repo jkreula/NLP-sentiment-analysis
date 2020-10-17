@@ -10,6 +10,14 @@ import pandas as pd
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation, NMF
+from time import time
+
+def print_topics(model, feature_names, num_words) -> None:
+    for topic_idx, topic in enumerate(model.components_, 1):
+        print(f"Topic #{topic_idx}:")
+        print(" ".join([feature_names[i] for i in topic.argsort()[:-num_words-1:-1]]))
+        print()
+
 
 if __name__ == "__main__":
     # Current directory
@@ -30,8 +38,34 @@ if __name__ == "__main__":
     
     X = count_vec.fit_transform(df['Review_text'].values)
     
-    lda = LatentDirichletAllocation(n_components = 10,
-                                    random_state = 123,
-                                    learning_method = 'batch')
+    n_components = 10
     
-    X_topics = lda.fit_transform(X)
+    # LDA
+    print("Start LDA")
+    time_start_lda = time()
+    lda = LatentDirichletAllocation(n_components = n_components,
+                                    random_state = 123,
+                                    learning_method = 'online')
+    X_topics_LDA = lda.fit_transform(X)
+    print(f"LDA finished in {time()-time_start_lda:.2f}s.")
+    
+    num_words = 5
+    
+    feature_names = count_vec.get_feature_names()
+
+    print("Topics for LDA")
+    print_topics(lda, feature_names, num_words)
+
+    # NMF
+    print("Start NMF")
+    time_start_nmf = time()
+    nmf = NMF(n_components=n_components, 
+              random_state=123,
+              alpha=0.1, 
+              l1_ratio=0.5,
+              max_iter = 500)
+    X_topics_NMF = nmf.fit_transform(X)
+    print(f"NMF finished in {time()-time_start_nmf:.2f}s.")
+    
+    print("Topics for NMF")
+    print_topics(nmf, feature_names, num_words)
