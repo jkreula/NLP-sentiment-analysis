@@ -98,12 +98,12 @@ def clean_and_tokenise_with_stemming(text: str) -> List[str]:
     Parameters
     ----------
     text : str
-        Text to be cleaned and tokenised.
+        Text to be cleaned and tokenised with stemming.
 
     Returns
     -------
     List[str]
-        List of cleaned tokens.
+        List of cleaned tokens with stemming.
 
     '''
     
