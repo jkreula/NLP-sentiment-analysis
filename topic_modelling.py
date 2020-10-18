@@ -36,6 +36,7 @@ if __name__ == "__main__":
                                 max_df = 0.1,
                                 max_features = 5000)
     
+    # Create bag-of-words matrix
     X = count_vec.fit_transform(df['Review_text'].values)
     
     n_components = 10
