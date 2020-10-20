@@ -16,12 +16,18 @@ import numpy as np
 from vectorizer import hvec
 from typing import Tuple
 
+# Update classifier
+from update_model import update_model
+
 app = Flask(__name__)
 
 current_dir = os.path.dirname(__file__)
 clf = pickle.load(open(os.path.join(current_dir,"pickled_objects","online_classifier.pkl"),"rb")) 
 
 database_path = os.path.join(current_dir, "reviews.sqlite")
+
+model_update = False
+
 
 def classify(text: str) -> Tuple[int, float]:
     label = {0: 'negative', 1: 'positive'}
@@ -80,7 +86,11 @@ def feedback():
     return render_template('thanks.html')
 
 if __name__ == "__main__":
+    if model_update:
+        batch_size = int(1e4)
+        clf = update_model(database_path = database_path,
+                           model = clf,
+                           batch_size = batch_size)
     app.run(debug=True)
-    #review_txt = "Awesome movie, really witty and hilarious!"
-    #database_entry(database_path, review_txt, 1)
+    
    
