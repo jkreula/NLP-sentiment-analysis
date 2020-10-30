@@ -9,8 +9,13 @@ import pandas as pd
 import re
 import os
 from typing import List
-from nltk.stem.porter import PorterStemmer
+from nltk.stem.snowball import SnowballStemmer
 from nltk.corpus import stopwords
+import spacy
+import en_core_web_sm
+
+# Load core English language model
+sp_lm = en_core_web_sm.load()
 
 def clean_text(text: str) -> str:
     '''
@@ -29,8 +34,7 @@ def clean_text(text: str) -> str:
 
     '''
     text = re.sub('<[^>]*>','',text)
-    smileys = re.findall(r'(?::|;|=)(?:-)?(?:\)|\(|D|P)',text)
-    text = re.sub(r'[\W]+',' ',text.lower()) + ' '.join(smileys).replace('-','')
+    text = re.sub(r'[\W]+',' ',text.lower())
     return text.strip()
 
 def get_tokens(text: str) -> List[str]:
@@ -68,8 +72,12 @@ def get_stemmed_tokens(text: str) -> List[str]:
 
     '''
     stop_words = stopwords.words('english')
-    stemmer = PorterStemmer()
+    stemmer = SnowballStemmer('english')
     return [stemmer.stem(word) for word in text.split() if word not in stop_words]
+
+def get_lemmatized_tokens(text: str) -> List[str]:
+    stop_words = stopwords.words('english')
+    return [word.lemma_ for word in sp_lm(text) if word.text not in stop_words]
 
 
 def clean_and_tokenise(text: str) -> List[str]:
@@ -109,13 +117,24 @@ def clean_and_tokenise_with_stemming(text: str) -> List[str]:
     
     return get_stemmed_tokens(clean_text(text))
 
+
+def clean_and_tokenise_with_lemmatization(text: str) -> List[str]:
+    return get_lemmatized_tokens(clean_text(text))
+
+
 if __name__ == "__main__":
     
-    test = ":-( </a> A :) test :( review ! :-(!"
+    test = "<h1> :-( </a> A :) 71 test testing <div> tester :( review ! :-(!"
     test_ = clean_text(test)
     print(test_)
     test__ = clean_and_tokenise(test)
     print(test__)
+    
+    test_lem = clean_and_tokenise_with_lemmatization(test)
+    print(test_lem)
+    
+    test_stem = clean_and_tokenise_with_stemming(test)
+    print(test_stem)
     
     # Current working directory
     CWD = os.getcwd()
@@ -126,6 +145,5 @@ if __name__ == "__main__":
     
     data_filename="imdb_data.csv"
     df = pd.read_csv(os.path.join(DATA_PATH,data_filename))
-    df['Review_text'] = df['Review_text'].apply(clean_text)
-    
-    
+    df_test = df.copy()
+    df['Review_text'] = df['Review_text'].apply(clean_text)    
