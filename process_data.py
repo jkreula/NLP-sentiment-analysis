@@ -9,18 +9,18 @@ import pandas as pd
 import re
 import os
 from typing import List
+import nltk
 from nltk.stem.snowball import SnowballStemmer
 from nltk.corpus import stopwords
 import spacy
 import en_core_web_sm
 
 # Load core English language model
-sp_lm = en_core_web_sm.load()
+nlp = en_core_web_sm.load()
 
 def clean_text(text: str) -> str:
     '''
-    Clean HTML markup, find smileys, remove non-words and put text to lowercase. 
-    Found smileys are concatenated at the end of the cleaned text.
+    Clean HTML markup, remove non-words and put text to lowercase. 
 
     Parameters
     ----------
@@ -54,7 +54,8 @@ def get_tokens(text: str) -> List[str]:
     '''
     # Define common stop words
     stop_words = stopwords.words('english')
-    return [word for word in text.split() if word not in stop_words]
+    tokens=nltk.word_tokenize(text)
+    return [word for word in tokens if word not in stop_words]
 
 def get_stemmed_tokens(text: str) -> List[str]:
     '''
@@ -77,7 +78,7 @@ def get_stemmed_tokens(text: str) -> List[str]:
 
 def get_lemmatized_tokens(text: str) -> List[str]:
     stop_words = stopwords.words('english')
-    return [word.lemma_ for word in sp_lm(text) if word.text not in stop_words]
+    return [word.lemma_ for word in nlp(text) if word.text not in stop_words]
 
 
 def clean_and_tokenise(text: str) -> List[str]:
@@ -95,7 +96,6 @@ def clean_and_tokenise(text: str) -> List[str]:
         List of cleaned tokens.
 
     '''
-    
     return get_tokens(clean_text(text))
 
 def clean_and_tokenise_with_stemming(text: str) -> List[str]:
